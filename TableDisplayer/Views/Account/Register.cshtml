@@ -1,0 +1,58 @@
+﻿@model RegisterViewModel
+<div class="modal fade" id="AddUpdateModelPopup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="AddUpdateModelLabel">Create user</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="registerForm" method="post" asp-controller="Account" asp-action="Register" onsubmit="cleerResult();">
+                    <div asp-validation-summary="ModelOnly"></div>
+                    <div>
+                        <label asp-for="UserName"></label><br />
+                        <input asp-for="UserName" id="UserNameInput" />
+                        <span asp-validation-for="UserName"></span>
+                    </div>
+                    <div>
+                        <label asp-for="Password"></label><br />
+                        <input asp-for="Password" id="pwdInput" />
+                        <span asp-validation-for="Password"></span>
+                    </div>
+                    <div>
+                        <a href="#" class="btn btn-info" onclick="fillPassword();">Fill password</a>
+                    </div>
+                    <div>
+                        <label asp-for="Name"></label><br />
+                        <input asp-for="Name" id="nameInput" />
+                        <span asp-validation-for="Name"></span>
+                    </div>
+                    <div>
+                        <label asp-for="Ext"></label><br />
+                        <input asp-for="Ext" />
+                        <span asp-validation-for="Ext"></span>
+                    </div>
+                    <div>
+                        <label asp-for="LexId"></label><br />
+                        <input asp-for="LexId" />
+                        <span asp-validation-for="LexId"></span>
+                    </div>
+                    <div>
+                        <label class="switch">
+                            <input asp-for="IsSuspended" class="checkbox" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div>
+                        <a href="#" class="btn btn-info defBtn" onclick="copyCreds();">Copy creds</a>
+                    </div>
+                    <textarea id="clipboadText" style="height: 0px; width: 0px; margin-left: -99999px;" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" value="Register" class="btn btn-primary" form="registerForm" />
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

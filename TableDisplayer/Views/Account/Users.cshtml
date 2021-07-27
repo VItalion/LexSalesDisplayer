@@ -1,0 +1,97 @@
+﻿@model IEnumerable<TableDisplayer.Models.UserViewModel>
+
+<div style="margin-left: 20px; margin-right: 20px;">
+    <a onclick="create();" class="btn btn-info float-right">Create new user</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Login)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LexId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Ext)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IsSuspended)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            @foreach (var item in Model) {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Login)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LexId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Ext)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsSuspended)
+                    </td>
+
+                    <td>
+                        <a onclick="edit('@item.Login');" class="btn btn-block">Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div id="result"></div>
+</div>
+
+<script>
+    function create() {
+        $.ajax({
+            type: "GET",
+            url: "/Account/Register/",
+            success: function (jsReturnArgs) {
+
+                if (jsReturnArgs.Status === 300) { 
+                    alert("You do not have access to that.");
+                }
+
+                $("#result").empty();
+                $("#result").html(jsReturnArgs);
+                $('#AddUpdateModelPopup').modal('show');
+            },
+            error: function (errorData) { alert(errorData); }
+        });
+    }
+
+    function edit(username) {
+        $.ajax({
+            type: "GET",
+            url: "/Account/Edit/",
+            data: { username: username },
+            success: function (jsReturnArgs) {
+
+                if (jsReturnArgs.Status === 300) {
+                    alert("You do not have access to that.");
+                }
+
+                $("#result").empty();
+                $("#result").html(jsReturnArgs);
+                $('#AddUpdateModelPopup').modal('show');
+            },
+            error: function (errorData) { alert(errorData); }
+        });
+    }
+
+    function cleerResult() {
+        $("#result").html();
+    }
+
+</script>

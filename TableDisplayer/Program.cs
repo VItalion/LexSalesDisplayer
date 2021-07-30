@@ -18,7 +18,6 @@ namespace TableDisplayer {
             using (var scope = host.Services.CreateScope()) {
                 var services = scope.ServiceProvider;
                 try {
-                    TLGRMBot.SendMessage("Sales displayer begin program init");
                     var userManager = services.GetRequiredService<UserManager<User>>();
                     var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                     var config = services.GetRequiredService<IConfiguration>();
@@ -29,10 +28,7 @@ namespace TableDisplayer {
                         adminLogin = section.GetChildren().FirstOrDefault(x => x.Key == "login")?.Value;
                         adminPwd = section.GetChildren().FirstOrDefault(x => x.Key == "password")?.Value;
                     }
-                    TLGRMBot.SendMessage("Sales displayer begin users init");
                     await RoleInitializer.InitializeAsync(userManager, rolesManager, adminLogin, adminPwd);
-                    TLGRMBot.SendMessage("Sales displayer end users init");
-                    TLGRMBot.SendMessage("Sales displayer begin program init");
                 } catch (Exception ex) {
                     var logger = services.GetRequiredService<ILogger<Program>>();
                     logger.LogError(ex, "An error occurred while seeding the database.");

@@ -156,6 +156,18 @@ namespace TableDisplayer.Controllers {
             return RedirectToAction("Users");
         }
 
+        [HttpPost]
+        [Authorize(Roles = RoleInitializer.ADMIN_ROLE)]
+        public async Task<IActionResult> Remove(string username) {
+            if (string.IsNullOrWhiteSpace(username)) { return BadRequest(); }
+
+            var user = await _userManager.FindByNameAsync(username);
+            if(user == null) { return NotFound(); }
+
+            await _userManager.DeleteAsync(user);
+            return RedirectToAction("Users");
+        }
+
         [HttpGet]
         public IActionResult AccessDenied() {
             return View();

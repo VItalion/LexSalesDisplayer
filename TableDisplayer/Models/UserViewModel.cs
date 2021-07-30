@@ -12,7 +12,7 @@ namespace TableDisplayer.Models {
         [Display(Name = "Name")]
         public string Name { get; set; }
 
-        [Display(Name = "Is suspended")]
+        [Display(Name = "Suspended")]
         public bool IsSuspended { get; set; }
 
         [Display(Name = "Lex id")]

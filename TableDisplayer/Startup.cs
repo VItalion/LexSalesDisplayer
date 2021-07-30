@@ -26,7 +26,6 @@ namespace TableDisplayer {
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
-            TLGRMBot.SendMessage("Sales displayer begin startup init");
             var mySqlVersion = Configuration.GetValue<string>("MySqlVersion");
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(
@@ -54,7 +53,6 @@ namespace TableDisplayer {
                     });
                 }
             }
-            TLGRMBot.SendMessage("Sales displayer end startup init");
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

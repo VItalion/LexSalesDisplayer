@@ -22,8 +22,11 @@
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
                     <div class="form-group form-check">
-                        <label class="form-check-label" />
-                        <input class="form-check-input" asp-for="IsSuspended" /> @Html.DisplayNameFor(model => model.IsSuspended)
+                        <p>@Html.DisplayNameFor(model => model.IsSuspended)</p>
+                        <label class="switch">
+                            <input asp-for="IsSuspended" class="checkbox" />
+                            <span class="slider round"></span>
+                        </label>
                     </div>
                     <div class="form-group">
                         <label asp-for="LexId" class="control-label"></label>
@@ -37,10 +40,10 @@
                     </div>
                     <div class="form-group">
                         <label class="control-label">New password</label>
-                        <p><input type="password" id="pwdInput" /></p>
-                        <p><a href="#" class="btn btn-info col-6" onclick="fillPassword();">Generate password</a></p>
-                        <p><a href="#" class="btn btn-info col-6" onclick="copyCreds();">Copy new creds</a></p>
-                        <p><a href="#" class="btn btn-info col-6" onclick="resetPassword();">Reset password</a></p>
+                        <p><input type="password" id="pwdInput" class="form-control" /></p>
+                        <p><a href="#" class="btn btn-info col-12" onclick="fillPassword();">Generate password</a></p>
+                        <p><a href="#" class="btn btn-info col-12" onclick="copyCreds();">Copy new creds</a></p>
+                        <p><a href="#" class="btn btn-info col-12" onclick="resetPassword();">Reset password</a></p>
                     </div>
                 </form>
             </div>

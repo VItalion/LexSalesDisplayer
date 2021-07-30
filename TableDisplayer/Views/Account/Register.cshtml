@@ -11,12 +11,12 @@
                     <div asp-validation-summary="ModelOnly"></div>
                     <div>
                         <label asp-for="UserName"></label><br />
-                        <input asp-for="UserName" id="UserNameInput" />
+                        <input asp-for="UserName" id="UserNameInput" class="form-control" />
                         <span asp-validation-for="UserName"></span>
                     </div>
                     <div>
                         <label asp-for="Password"></label><br />
-                        <input asp-for="Password" id="pwdInput" />
+                        <input asp-for="Password" id="pwdInput" class="form-control" />
                         <span asp-validation-for="Password"></span>
                     </div>
                     <div>
@@ -24,35 +24,36 @@
                     </div>
                     <div>
                         <label asp-for="Name"></label><br />
-                        <input asp-for="Name" id="nameInput" />
+                        <input asp-for="Name" id="nameInput" class="form-control" />
                         <span asp-validation-for="Name"></span>
                     </div>
                     <div>
                         <label asp-for="Ext"></label><br />
-                        <input asp-for="Ext" />
+                        <input asp-for="Ext" class="form-control" />
                         <span asp-validation-for="Ext"></span>
                     </div>
                     <div>
                         <label asp-for="LexId"></label><br />
-                        <input asp-for="LexId" />
+                        <input asp-for="LexId" class="form-control" />
                         <span asp-validation-for="LexId"></span>
                     </div>
                     <div>
+                        <p>@Html.DisplayNameFor(model => model.IsSuspended)</p>
                         <label class="switch">
-                            <input asp-for="IsSuspended" class="checkbox" />
-                            <span class="slider"></span>
+                            <input asp-for="IsSuspended" class="checkbox form-control" />
+                            <span class="slider round"></span>
                         </label>
                     </div>
                     <div>
                         <a href="#" class="btn btn-info defBtn" onclick="copyCreds();">Copy creds</a>
                     </div>
-                    <textarea id="clipboadText" style="height: 0px; width: 0px; margin-left: -99999px;" />
                 </form>
             </div>
             <div class="modal-footer">
                 <input type="submit" value="Register" class="btn btn-primary" form="registerForm" />
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
+            <textarea id="clipboadText" style="height: 0px; width: 0px; margin-left: -99999px;" />
         </div>
     </div>
 </div>

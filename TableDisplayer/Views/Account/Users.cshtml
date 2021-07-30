@@ -25,27 +25,28 @@
         </thead>
         <tbody id="tableBody">
             @foreach (var item in Model) {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Login)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.LexId)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Ext)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.IsSuspended)
-                    </td>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Login)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LexId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ext)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsSuspended)
+                </td>
 
-                    <td>
-                        <a onclick="edit('@item.Login');" class="btn btn-block">Edit</a>
-                    </td>
-                </tr>
+                <td>
+                    <a onclick="edit('@item.Login');" class="btn">Edit</a>|
+                    <a onclick="remove('@item.Login');" class="btn">Remove</a>
+                </td>
+            </tr>
             }
         </tbody>
     </table>
@@ -59,7 +60,7 @@
             url: "/Account/Register/",
             success: function (jsReturnArgs) {
 
-                if (jsReturnArgs.Status === 300) { 
+                if (jsReturnArgs.Status === 300) {
                     alert("You do not have access to that.");
                 }
 
@@ -86,7 +87,22 @@
                 $("#result").html(jsReturnArgs);
                 $('#AddUpdateModelPopup').modal('show');
             },
-            error: function (errorData) { alert(errorData); }
+            error: function (errorData) { alert('Error'); }
+        });
+    }
+
+    function remove(username) {
+        $.post({
+            url: "/Account/Remove/",
+            data: { username: username },
+            success: function (jsReturnArgs) {
+                $.get({
+                    url: "/Account/Users",
+                    success: function (data) {
+                        location.reload();
+                    }
+                });
+            }
         });
     }
 

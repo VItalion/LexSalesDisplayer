@@ -82,9 +82,8 @@ namespace TableDisplayer.Controllers {
         [HttpPost]
         [Authorize(Roles = RoleInitializer.UPLOADER_ROLE)]
         public async Task<IActionResult> Upload([FromBody] SalesDto dto) {
-            //if (string.IsNullOrWhiteSpace(json)) { return StatusCode(400); }
+            if (dto == null) { return StatusCode(400); }
 
-            //var dto = Newtonsoft.Json.JsonConvert.DeserializeObject<SalesDto>(json);
             if (dto.Name == "Lex") {
                 var lex = ConvertToLex(dto);
                 dbContext.LexSales.RemoveRange(dbContext.LexSales.ToArray());

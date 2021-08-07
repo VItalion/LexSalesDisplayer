@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
@@ -13,10 +14,12 @@ namespace TableDisplayer.Controllers {
     public class SalesController : Controller {
         readonly ApplicationDbContext dbContext;
         readonly IHubContext<TableHub> hubContext;
+        readonly UserManager<User> userManager;
 
-        public SalesController(ApplicationDbContext dbContext, IHubContext<TableHub> hubContext) {
+        public SalesController(ApplicationDbContext dbContext, IHubContext<TableHub> hubContext, UserManager<User> userManager) {
             this.dbContext = dbContext;
             this.hubContext = hubContext;
+            this.userManager = userManager;
         }
 
         public IActionResult Index() {
@@ -25,20 +28,32 @@ namespace TableDisplayer.Controllers {
 
         [HttpGet]
         [Authorize]
-        public IActionResult GetLex() {
+        public async Task<IActionResult> GetLex() {
+            var name = User.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(name)) { return RedirectToAction("AccessDenied", "Account"); }
+
+            var user = await userManager.FindByNameAsync(name);
+            if (user == null || user.IsSuspended) { return RedirectToAction("AccessDenied", "Account"); }
+
             var sales = dbContext.LexSales.ToArray();
             var vms = Convert(sales.OrderBy(x => x.Date));
 
-            return View("SalesView", vms);
+            return View("LexView", vms);
         }
 
         [HttpGet]
         [Authorize]
-        public IActionResult GetCredit() {
+        public async Task<IActionResult> GetCredit() {
+            var name = User.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(name)) { return RedirectToAction("AccessDenied", "Account"); }
+
+            var user = await userManager.FindByNameAsync(name);
+            if (user == null || user.IsSuspended) { return RedirectToAction("AccessDenied", "Account"); }
+
             var sales = dbContext.CreditSales.ToArray();
             var vms = Convert(sales.OrderBy(x => x.Date));
 
-            return View("SalesView", vms);
+            return View("CreditView", vms);
         }
 
         IEnumerable<SaleViewModel> Convert(IEnumerable<Sale> models) {
@@ -81,6 +96,9 @@ namespace TableDisplayer.Controllers {
             }
 
             await dbContext.SaveChangesAsync();
+
+            var suspendedUsers = dbContext.Users.Where(x => x.IsSuspended);
+            await DisconnectUsersAsync(suspendedUsers);
 
             var json = JsonConvert.SerializeObject(dto);
             await hubContext.Clients.All.SendAsync($"Update{dto.Name}", json);
@@ -148,12 +166,27 @@ namespace TableDisplayer.Controllers {
 
         [HttpGet]
         public async Task<IActionResult> Test() {
-            var sales = dbContext.LexSales.OrderBy(x=>x.Date).Take(10).ToArray();
+            var sales = dbContext.LexSales.OrderBy(x => x.Date).Take(10).ToArray();
             var vms = Convert(sales);
             var json = JsonConvert.SerializeObject(vms);
+            var suspendedUsers = dbContext.Users.Where(x => x.IsSuspended);
+            await DisconnectUsersAsync(suspendedUsers);
             await hubContext.Clients.All.SendAsync("UpdateLex", json);
 
             return Ok();
+        }
+
+        private async Task DisconnectUsersAsync(IEnumerable<User> users) {
+            if (users == null || !users.Any()) { return; }
+
+            foreach (var user in users) {
+                if (!TableHub.ActiveUsers.TryGetValue(user.UserName, out var connectionId)) { continue; }
+
+                var client = hubContext.Clients.Client(connectionId);
+                if (client != null) {
+                    await client.SendAsync("Suspend");
+                }
+            }
         }
     }
 }

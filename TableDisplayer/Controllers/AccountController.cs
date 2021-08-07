@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,12 @@ namespace TableDisplayer.Controllers {
     public class AccountController : Controller {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IHubContext<TableHub> _hubContext;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager) {
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IHubContext<TableHub> hubContext) {
             _userManager = userManager;
             _signInManager = signInManager;
+            _hubContext = hubContext;
         }
 
         [HttpGet]
@@ -37,7 +40,7 @@ namespace TableDisplayer.Controllers {
         [Authorize(Roles = RoleInitializer.ADMIN_ROLE)]
         public async Task<IActionResult> Register(RegisterViewModel model) {
             if (ModelState.IsValid) {
-                var user = new User { 
+                var user = new User {
                     UserName = model.UserName,
                     Name = model.Name,
                     LexId = model.LexId,
@@ -58,10 +61,10 @@ namespace TableDisplayer.Controllers {
         }
 
         [HttpGet]
-        [Authorize(Roles =RoleInitializer.ADMIN_ROLE)]
+        [Authorize(Roles = RoleInitializer.ADMIN_ROLE)]
         public async Task<IActionResult> ResetPassword(string username, string password) {
             var user = await _userManager.FindByNameAsync(username);
-            if(user == null) { return NotFound(); }
+            if (user == null) { return NotFound(); }
 
             try {
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -71,15 +74,17 @@ namespace TableDisplayer.Controllers {
                 } else {
                     return BadRequest();
                 }
-            }catch(Exception ex) {
+            } catch (Exception ex) {
                 return BadRequest();
             }
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model) {
             if (ModelState.IsValid) {
+                var user = await _userManager.FindByNameAsync(model.UserName);
+                if (user == null || user.IsSuspended) { return RedirectToAction("AccessDenied", "Account"); ; }
+
                 var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
                 if (result.Succeeded) {
                     if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl)) {
@@ -145,13 +150,20 @@ namespace TableDisplayer.Controllers {
             if (user == null) { return BadRequest(); }
 
             var model = await _userManager.FindByNameAsync(user.Login);
-            if(model == null) { return NotFound(); }
+            if (model == null) { return NotFound(); }
 
             model.Name = user.Name;
             model.Ext = user.Ext;
             model.LexId = user.LexId;
             model.IsSuspended = user.IsSuspended;
             await _userManager.UpdateAsync(model);
+
+            if (user.IsSuspended && TableHub.ActiveUsers.TryGetValue(user.Login, out var connectionId)) {
+                var hubClient = _hubContext.Clients.Client(TableHub.ActiveUsers[user.Login]);
+                if (hubClient != null) {
+                    await hubClient.SendAsync("Suspend");
+                }
+            }
 
             return RedirectToAction("Users");
         }
@@ -162,7 +174,7 @@ namespace TableDisplayer.Controllers {
             if (string.IsNullOrWhiteSpace(username)) { return BadRequest(); }
 
             var user = await _userManager.FindByNameAsync(username);
-            if(user == null) { return NotFound(); }
+            if (user == null) { return NotFound(); }
 
             await _userManager.DeleteAsync(user);
             return RedirectToAction("Users");

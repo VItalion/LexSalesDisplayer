@@ -1,0 +1,120 @@
+﻿@model IEnumerable<TableDisplayer.Models.SaleViewModel>
+
+@{
+    ViewData["Title"] = "Sales";
+}
+
+
+<div style="margin-left: 20px; margin-right: 20px;">
+    <h1>Sales</h1>
+    <table class="table" id="salesTable">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Date)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TID)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Agent)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Comment)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Vendor_ID)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First_Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Last_Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Phone)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            @foreach (var item in Model) {
+                @if (item.IsSale) {
+                    ViewData[item.Date] = "background-color: green;";
+                }
+                <tr style="@ViewData[item.Date]">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Agent)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Comment)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Vendor_ID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.First_Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Last_Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Phone)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    function Init() {
+        const hubConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/table")
+            .build();
+
+        hubConnection.on("UpdateCredit", function (data) {
+            var sales = JSON.parse(data);
+            var table = $('#salesTable').DataTable();
+            table.clear().draw();
+            for (let sale of sales) {
+                var rowNode = table
+                    .row.add([sale.Date, sale.TID, sale.Agent, sale.Status, sale.Comment, sale.Vendor_ID, sale.First_Name, sale.Last_Name, sale.Phone, sale.Email])
+                    .draw()
+                    .node();
+
+                if (sale.IsSale) {
+                    $(rowNode).css('background-color', 'green');
+                }
+            }
+        });
+
+        hubConnection.on("Suspend", function () {
+            location.reload();
+        });
+
+        hubConnection.serverTimeoutInMilliseconds = 1000 * 60 * 10;
+        hubConnection.start();
+
+        $('#salesTable').DataTable();
+    }
+    window.onload = Init;
+</script>

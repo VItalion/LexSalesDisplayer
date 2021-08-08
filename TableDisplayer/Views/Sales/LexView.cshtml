@@ -95,7 +95,7 @@
             var sales = JSON.parse(data);
             var table = $('#salesTable').DataTable();
             table.clear().draw();
-            for (let sale of sales) {
+            for (let sale of sales.Rows) {
                 var rowNode = table
                     .row.add([sale.Date, sale.TID, sale.Agent, sale.Status, sale.Comment, sale.Vendor_ID, sale.First_Name, sale.Last_Name, sale.Phone, sale.Email])
                     .draw()

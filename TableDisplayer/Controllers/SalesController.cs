@@ -163,18 +163,6 @@ namespace TableDisplayer.Controllers {
             return Array.Empty<CreditSale>();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Test() {
-            var sales = dbContext.LexSales.OrderBy(x => x.Date).Take(10).ToArray();
-            var vms = Convert(sales);
-            var json = JsonConvert.SerializeObject(vms);
-            var suspendedUsers = dbContext.Users.Where(x => x.IsSuspended);
-            await DisconnectUsersAsync(suspendedUsers);
-            await hubContext.Clients.All.SendAsync("UpdateLex", json);
-
-            return Ok();
-        }
-
         private async Task DisconnectUsersAsync(IEnumerable<User> users) {
             if (users == null || !users.Any()) { return; }
 

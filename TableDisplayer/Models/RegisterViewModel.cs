@@ -11,7 +11,7 @@ namespace TableDisplayer.Models {
         public string UserName { get; set; }
 
         [Required]
-        [DataType(DataType.Password)]
+        [DataType(DataType.Text)]
         [Display(Name = "Password")]
         public string Password { get; set; }
 

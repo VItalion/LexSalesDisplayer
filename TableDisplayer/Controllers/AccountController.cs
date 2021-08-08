@@ -90,7 +90,7 @@ namespace TableDisplayer.Controllers {
                     if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl)) {
                         return Redirect(model.ReturnUrl);
                     } else {
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("GetLex", "Sales");
                     }
                 } else {
                     ModelState.AddModelError("", "Incorrect login/password");
@@ -175,6 +175,18 @@ namespace TableDisplayer.Controllers {
 
             var user = await _userManager.FindByNameAsync(username);
             if (user == null) { return NotFound(); }
+
+            user.IsSuspended = true;
+            await _userManager.UpdateAsync(user);
+
+            if (user.IsSuspended && TableHub.ActiveUsers.TryGetValue(username, out var connectionId))
+            {
+                var hubClient = _hubContext.Clients.Client(TableHub.ActiveUsers[username]);
+                if (hubClient != null)
+                {
+                    await hubClient.SendAsync("Suspend");
+                }
+            }
 
             await _userManager.DeleteAsync(user);
             return RedirectToAction("Users");

@@ -46,6 +46,8 @@
             @foreach (var item in Model) {
                 @if (item.IsSale) {
                     ViewData[item.Date] = "background-color: green;";
+                } else {
+                    ViewData[item.Date] = string.Empty;
                 }
                 <tr style="@ViewData[item.Date]">
                     <td>

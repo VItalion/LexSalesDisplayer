@@ -17,7 +17,7 @@ namespace TableDisplayer.Controllers {
         }
 
         public IActionResult Index() {
-            return View();
+            return RedirectToAction("GetLex", "Sales");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

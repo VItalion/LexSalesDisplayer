@@ -114,7 +114,15 @@
         hubConnection.serverTimeoutInMilliseconds = 1000 * 60 * 10;
         hubConnection.start();
 
-        $('#salesTable').DataTable();
+        $('#salesTable').DataTable(
+            {
+                "order": [[0, "desc"]],
+                "lengthMenu":
+                [
+                    [ -1],
+                    [ "All"]
+                ]
+            });
     }
     window.onload = Init;
 </script>

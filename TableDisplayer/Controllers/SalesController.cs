@@ -36,7 +36,7 @@ namespace TableDisplayer.Controllers {
             if (user == null || user.IsSuspended) { return RedirectToAction("AccessDenied", "Account"); }
 
             var sales = dbContext.LexSales.ToArray();
-            var vms = Convert(sales.OrderBy(x => x.Date));
+            var vms = Convert(sales.OrderByDescending(x => x.Date));
 
             return View("LexView", vms);
         }
@@ -51,7 +51,7 @@ namespace TableDisplayer.Controllers {
             if (user == null || user.IsSuspended) { return RedirectToAction("AccessDenied", "Account"); }
 
             var sales = dbContext.CreditSales.ToArray();
-            var vms = Convert(sales.OrderBy(x => x.Date));
+            var vms = Convert(sales.OrderByDescending(x => x.Date));
 
             return View("CreditView", vms);
         }

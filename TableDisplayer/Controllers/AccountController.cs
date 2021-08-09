@@ -158,10 +158,13 @@ namespace TableDisplayer.Controllers {
             model.IsSuspended = user.IsSuspended;
             await _userManager.UpdateAsync(model);
 
-            if (user.IsSuspended && TableHub.ActiveUsers.TryGetValue(user.Login, out var connectionId)) {
-                var hubClient = _hubContext.Clients.Client(TableHub.ActiveUsers[user.Login]);
-                if (hubClient != null) {
-                    await hubClient.SendAsync("Suspend");
+            var userConnections = TableHub.GetConnections(user.Login);
+            if (user.IsSuspended && userConnections.Any()) {
+                foreach (var connection in userConnections) {
+                    var client = _hubContext.Clients.Client(connection.Value);
+                    if (client != null) {
+                        await client.SendAsync("Suspend");
+                    }
                 }
             }
 

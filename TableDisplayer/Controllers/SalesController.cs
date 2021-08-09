@@ -167,11 +167,14 @@ namespace TableDisplayer.Controllers {
             if (users == null || !users.Any()) { return; }
 
             foreach (var user in users) {
-                if (!TableHub.ActiveUsers.TryGetValue(user.UserName, out var connectionId)) { continue; }
+                var userConnections = TableHub.GetConnections(user.UserName);
+                if (!userConnections.Any()) { continue; }
 
-                var client = hubContext.Clients.Client(connectionId);
-                if (client != null) {
-                    await client.SendAsync("Suspend");
+                foreach (var connection in userConnections) {
+                    var client = hubContext.Clients.Client(connection.Value);
+                    if (client != null) {
+                        await client.SendAsync("Suspend");
+                    }
                 }
             }
         }

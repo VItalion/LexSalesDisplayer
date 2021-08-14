@@ -10,6 +10,15 @@ namespace TableDisplayer.Data {
         public const string USER_ROLE = "employee";
         public const string UPLOADER_ROLE = "uploader";
 
+        public static async Task InitializeAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IEnumerable<KeyValuePair<string, string>> creds) {
+            if(creds == null || !creds.Any()) { return; }
+
+            foreach(var item in creds) {
+                var login = item.Key;
+                var pwd = item.Value;
+                await InitializeAsync(userManager, roleManager, login, pwd);
+            }
+        }
 
         public static async Task InitializeAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, string adminLogin, string adminPwd) {
             var uploaderName = "uploader";

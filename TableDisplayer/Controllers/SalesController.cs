@@ -38,6 +38,8 @@ namespace TableDisplayer.Controllers {
             var sales = dbContext.LexSales.ToArray();
             var vms = Convert(sales.OrderByDescending(x => x.Date));
 
+            ViewData[""]
+
             return View("LexView", vms);
         }
 
@@ -84,14 +86,33 @@ namespace TableDisplayer.Controllers {
         public async Task<IActionResult> Upload([FromBody] SalesDto dto) {
             if (dto == null) { return StatusCode(400); }
 
+            var newMetadata = new SaleMetadata {
+                Name = dto.Name,
+                SalesCount = int.TryParse(dto.SalesCount, out var salesCount) ? salesCount : dto.Rows.Count,
+                Conversion = dto.Conversion,
+                TransactionsCount = int.TryParse(dto.TransactionsCount, out var transactionsCount) ? transactionsCount : 0
+            };
+
             if (dto.Name == "Lex") {
                 var lex = ConvertToLex(dto);
                 dbContext.LexSales.RemoveRange(dbContext.LexSales.ToArray());
                 dbContext.LexSales.AddRange(lex);
+
+                var lexMetadata = dbContext.SaleMetadata.FirstOrDefault(x => x.Name == "Lex");
+                if(lexMetadata != null) {
+                    dbContext.SaleMetadata.Remove(lexMetadata);
+                }
+                dbContext.Add(newMetadata);
             } else if (dto.Name == "Credit") {
                 var credit = ConvertToCredit(dto);
                 dbContext.CreditSales.RemoveRange(dbContext.CreditSales.ToArray());
                 dbContext.CreditSales.AddRange(credit);
+
+                var creditMetadata = dbContext.SaleMetadata.FirstOrDefault(x => x.Name == "Credit");
+                if (creditMetadata != null) {
+                    dbContext.SaleMetadata.Remove(creditMetadata);
+                }
+                dbContext.Add(newMetadata);
             }
 
             await dbContext.SaveChangesAsync();

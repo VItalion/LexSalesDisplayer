@@ -28,6 +28,16 @@ namespace TableDisplayer.Data {
         }
     }
 
+    public class SaleMetadata {
+        [Required]
+        public Guid Id { get; set; }
+        [Required]
+        public string Name { get; set; }
+        public int SalesCount { get; set; }
+        public int TransactionsCount { get; set; }
+        public string Conversion { get; set; }
+    }
+
     public class LexSale : Sale { }
     public class CreditSale : Sale { }
 }

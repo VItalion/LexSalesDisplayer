@@ -38,7 +38,6 @@ namespace TableDisplayer.Controllers {
             var sales = dbContext.LexSales.ToArray();
             var vms = Convert(sales.OrderByDescending(x => x.Date));
 
-            ViewData[""]
 
             return View("LexView", vms);
         }

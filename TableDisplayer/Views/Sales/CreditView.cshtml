@@ -6,7 +6,8 @@
 
 
 <div style="margin-left: 20px; margin-right: 20px;">
-    <h1>Sales</h1>
+    <h6 id="salesMetadata">Sales count: @ViewData["SalesCount"] | Conversion: @ViewData["Conversion"] | Transactions count: @ViewData["TransactionsCount"]</h6>
+
     <table class="table" id="salesTable">
         <thead>
             <tr>
@@ -107,6 +108,8 @@
                     $(rowNode).css('background-color', 'green');
                 }
             }
+
+            $('#salesMetadata').html('Sales count: ' + sales.SalesCount + ' | Conversion: ' + sales.Conversion + ' | Transactions count: ' + sales.TransactionsCount);
         });
 
         hubConnection.on("Suspend", function () {

@@ -37,7 +37,12 @@ namespace TableDisplayer.Controllers {
 
             var sales = dbContext.LexSales.ToArray();
             var vms = Convert(sales.OrderByDescending(x => x.Date));
-
+            var metadata = dbContext.SaleMetadata.FirstOrDefault(x => x.Name == "Lex");
+            if (metadata != null) {
+                ViewData["SalesCount"] = metadata.SalesCount;
+                ViewData["Conversion"] = metadata.Conversion;
+                ViewData["TransactionsCount"] = metadata.TransactionsCount;
+            }            
 
             return View("LexView", vms);
         }
@@ -53,6 +58,12 @@ namespace TableDisplayer.Controllers {
 
             var sales = dbContext.CreditSales.ToArray();
             var vms = Convert(sales.OrderByDescending(x => x.Date));
+            var metadata = dbContext.SaleMetadata.FirstOrDefault(x => x.Name == "Lex");
+            if (metadata != null) {
+                ViewData["SalesCount"] = metadata.SalesCount;
+                ViewData["Conversion"] = metadata.Conversion;
+                ViewData["TransactionsCount"] = metadata.TransactionsCount;
+            }
 
             return View("CreditView", vms);
         }
@@ -98,7 +109,7 @@ namespace TableDisplayer.Controllers {
                 dbContext.LexSales.AddRange(lex);
 
                 var lexMetadata = dbContext.SaleMetadata.FirstOrDefault(x => x.Name == "Lex");
-                if(lexMetadata != null) {
+                if (lexMetadata != null) {
                     dbContext.SaleMetadata.Remove(lexMetadata);
                 }
                 dbContext.Add(newMetadata);

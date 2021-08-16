@@ -6,7 +6,8 @@
 
 
 <div style="margin-left: 20px; margin-right: 20px;">
-    <h1>Sales</h1>
+    <h6 id="salesMetadata">Sales count: @ViewData["SalesCount"] | Conversion: @ViewData["Conversion"] | Transactions count: @ViewData["TransactionsCount"]</h6>
+
     <table class="table" id="salesTable">
         <thead>
             <tr>
@@ -97,6 +98,7 @@
             var sales = JSON.parse(data);
             var table = $('#salesTable').DataTable();
             table.clear().draw();
+
             for (let sale of sales.Rows) {
                 var rowNode = table
                     .row.add([sale.Date, sale.TID, sale.Agent, sale.Status, sale.Comment, sale.Vendor_ID, sale.First_Name, sale.Last_Name, sale.Phone, sale.Email])
@@ -107,6 +109,8 @@
                     $(rowNode).css('background-color', 'green');
                 }
             }
+
+            $('#salesMetadata').html('Sales count: ' + sales.SalesCount + ' | Conversion: ' + sales.Conversion + ' | Transactions count: ' + sales.TransactionsCount);
         });
 
         hubConnection.on("Suspend", function () {
@@ -120,10 +124,10 @@
             {
                 "order": [[0, "desc"]],
                 "lengthMenu":
-                [
-                    [ -1],
-                    [ "All"]
-                ]
+                    [
+                        [-1],
+                        ["All"]
+                    ]
             });
     }
     window.onload = Init;

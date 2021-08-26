@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using TableDisplayer.Data;
 
@@ -55,7 +57,14 @@ namespace TableDisplayer
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>()
+                    webBuilder.UseKestrel(o=>
+                        {
+                            o.ConfigureHttpsDefaults(o =>
+                                {
+                                    o.ServerCertificate = new X509Certificate2(@"C:\crt\cct.pfx", "popajopa");
+                                });
+                        }).UseUrls("http://sales.housingsolutionspro.com", "https://sales.housingsolutionspro.com")
+                        .UseStartup<Startup>()
                         .UseIISIntegration();
                 });
     }

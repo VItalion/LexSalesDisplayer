@@ -10,21 +10,28 @@ using System.Linq;
 using System.Threading.Tasks;
 using TableDisplayer.Data;
 
-namespace TableDisplayer {
-    public class Program {
-        public static async Task Main(string[] args) {
+namespace TableDisplayer
+{
+    public class Program
+    {
+        public static async Task Main(string[] args)
+        {
             var host = CreateHostBuilder(args).Build();
 
-            using (var scope = host.Services.CreateScope()) {
+            using (var scope = host.Services.CreateScope())
+            {
                 var services = scope.ServiceProvider;
-                try {
+                try
+                {
                     var userManager = services.GetRequiredService<UserManager<User>>();
                     var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                     var config = services.GetRequiredService<IConfiguration>();
                     var section = config.GetSection("InitCreds");
-                    if (section != null) {
+                    if (section != null)
+                    {
                         var creds = new List<KeyValuePair<string, string>>();
-                        foreach (var item in section.GetChildren()) {
+                        foreach (var item in section.GetChildren())
+                        {
                             var login = item.GetChildren().FirstOrDefault(x => x.Key == "login")?.Value;
                             var pwd = item.GetChildren().FirstOrDefault(x => x.Key == "password")?.Value;
 
@@ -33,7 +40,9 @@ namespace TableDisplayer {
 
                         await RoleInitializer.InitializeAsync(userManager, rolesManager, creds);
                     }
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     var logger = services.GetRequiredService<ILogger<Program>>();
                     logger.LogError(ex, "An error occurred while seeding the database.");
                 }
@@ -44,9 +53,10 @@ namespace TableDisplayer {
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => {
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
                     webBuilder.UseStartup<Startup>()
-                    .UseIISIntegration();
+                        .UseIISIntegration();
                 });
     }
 }
